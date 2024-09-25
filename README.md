@@ -43,15 +43,15 @@ Before you begin, ensure you have the following installed:
 ## Running the Application
 To start the React development server, run:
     
-    ```bash
-    npm start
-    ```
+ ```bash
+ npm start
+ ```
 ## Building for Production
 To create a production build of the app:
     
-    ```bash
-    npm run build
-    ```
+ ```bash
+ npm run build
+ ```
 The production-ready files will be in the build/ folder.
 
 ## CI/CD Pipeline
