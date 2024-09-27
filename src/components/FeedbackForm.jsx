@@ -1,63 +1,64 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useUser } from '@clerk/clerk-react';
 
-const FeedbackForm = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [feedback, setFeedback] = useState('');
+
+function FeedbackForm() {
+    const { isSignedIn, user } = useUser();
+    const [formData, setFormData] = useState({
+        name: user ? user.fullName : '',
+        email: user ? user.emailAddresses[0].emailAddress : '',
+        feedback: ''
+    });
+
     const [sentiment, setSentiment] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+
+    if (!isSignedIn) {
+        return <div>Please sign in to submit feedback.</div>;
+    }
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
-        setSentiment('');
 
         try {
-            const response = await axios.post('http://localhost:5000/api/feedback/submit', {
-                name,
-                email,
-                feedback,
-            });
-            console.log('Feedback submitted:', response.data);
+            const response = await axios.post(
+                'http://localhost:5000/api/feedback/submit',
+                formData
+            );
             setSentiment(response.data.sentiment);
-            setLoading(false);
         } catch (error) {
             console.error('Error submitting feedback:', error);
-            setError('There was an error submitting your feedback.');
+        } finally {
             setLoading(false);
         }
     };
 
-    if (error) {
-        return (
-            <div className="mt-4 p-2 bg-red-500 text-white rounded-md">
-                {error}
-            </div>
-        )
-    }
 
-    else if (sentiment) {
+    if (sentiment) {
         return (
             <div
                 className={`font-medium text-xl mt-4 p-2 rounded-md flex-1 text-white text-center flex items-center justify-center  ${sentiment.toLowerCase() === 'positive'
                     ? 'bg-green-500'
                     : sentiment.toLowerCase() === 'neutral'
                         ? 'bg-yellow-500'
-                        : 'bg-red-500'
-                    }`}
+                        : 'bg-red-500'}`}
             >
                 Sentiment : {sentiment.charAt(0).toUpperCase() + sentiment.slice(1)}
             </div>
-        )
+        );
     }
 
     else return (
-
-
-
         <div className="flex-1 p-8 shadow-lg rounded-xl text-left mt-8 md:mt-0">
             <form onSubmit={handleSubmit}>
 
@@ -67,23 +68,23 @@ const FeedbackForm = () => {
                         <input
                             type="text"
                             className="w-full px-3 py-2 font-light text-sm rounded-full mt-3 shadow-md border border-gray-300 text-start   focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
                             placeholder="Your Name"
-                            required
-                        />
+                            required />
                     </div>
 
                     <div className="">
                         <label className="font-medium text-black">Email</label>
                         <input
                             type="email"
+                            name="email"
                             className="w-full px-3 py-2 font-light text-sm rounded-full mt-3 shadow-md border border-gray-300 text-start focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formData.email}
+                            onChange={handleChange}
                             placeholder="Email Address"
-                            required
-                        />
+                            required />
                     </div>
                 </div>
 
@@ -92,11 +93,11 @@ const FeedbackForm = () => {
                     <label className="text-black font-medium">Feedback</label>
                     <textarea
                         className="w-full px-3 py-2 font-light text-sm rounded-md min-h-24 mt-3 shadow-md border border-gray-300 text-start focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                        value={feedback}
-                        onChange={(e) => setFeedback(e.target.value)}
+                        name="feedback"
+                        value={formData.feedback}
+                        onChange={handleChange}
                         placeholder="Enter your feedback"
-                        required
-                    />
+                        required />
                 </div>
 
                 <button
@@ -110,6 +111,6 @@ const FeedbackForm = () => {
         </div>
     );
 
-};
+}
 
 export default FeedbackForm;
