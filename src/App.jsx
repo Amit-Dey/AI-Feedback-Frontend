@@ -24,7 +24,7 @@ function App() {
           <h1 className=" text-4xl font-extrabold text-[#170F49] py-5">Fill the form to submit your feedback</h1>
           <p className="text-[#6F6C90] text-base">Please take a moment to rate your experience with our services. Your feedback is important to us. Thank you for your time.</p>
           <SignedOut>
-            <p className='text-gray-800 text-xl mt-14' >You must be signed in to submit your feedback. <br></br> If you don't have an account, you can create one for free.</p>
+            <p className='text-gray-800 text-xl mt-14' >You must be signed in to submit your feedback. <br></br> If you don&apos;t have an account, you can create one for free.</p>
           </SignedOut>
 
         </div>
